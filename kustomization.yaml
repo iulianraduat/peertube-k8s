@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+metadata:
+  labels:
+    app: peertube
+resources:
+  - peertube-env-configmap.yaml
+  - peertube-deployment.yaml

@@ -1,0 +1,147 @@
+listen:
+  hostname: 0.0.0.0
+  port: 9000
+
+# Correspond to your reverse proxy server_name/listen configuration
+
+webserver:
+  https: true
+  hostname: video.<YOUR_DOMAIN>
+  port: 443
+
+rates_limit:
+  api:
+    window: 10 seconds
+    max: 50
+  login:
+    window: 5 minutes
+    max: 15
+  signup:
+    window: 5 minutes
+    max: 2
+  ask_send_email:
+    window: 5 minutes
+    max: 3
+
+trust_proxy:
+  - "loopback"
+  - "127.0.0.1"
+
+database:
+  hostname: 127.0.0.1
+  port: 5432
+  name: peertube
+  suffix: ""
+  username: peertube
+  password: p33r7u63
+  pool:
+    max: 5
+
+redis:
+  hostname: 127.0.0.1
+  port: 6379
+  auth: null
+
+smtp:
+  hostname: 127.0.0.1
+  port: 587
+  username: admin@<YOUR_DOMAIN>
+  password: <your-email-password>
+  tls: false
+  disable_starttls: false
+  ca_file: null
+  from_address: "admin@<YOUR_DOMAIN>"
+
+email:
+  body:
+    signature: PeerTube
+  subject:
+    prefix: "[PeerTube]"
+
+storage:
+  tmp: "/data/tmp/"
+  tmp_persistent: "/data/tmp-persistent/"
+  bin: "/data/bin/"
+  avatars: "/data/avatars/"
+  web_videos: "/data/web-videos/"
+  videos: "/data/videos/"
+  streaming_playlists: "/data/streaming-playlists/"
+  redundancy: "/data/redundancy/"
+  logs: "/data/logs/"
+  previews: "/data/previews/"
+  thumbnails: "/data/thumbnails/"
+  storyboards: "/data/storyboards/"
+  torrents: "/data/torrents/"
+  captions: "/data/captions/"
+  cache: "/data/cache/"
+  plugins: "/data/plugins/"
+  well_known: "/data/well-known/"
+  client_overrides: "/data/client-overrides/"
+
+log:
+  level: "info"
+  rotation:
+    enabled: true
+    maxFileSize: 12MB
+    maxFiles: 20
+  anonymizeIP: false
+
+search:
+  remote_uri:
+    users: true
+    anonymous: false
+
+trending:
+  videos:
+    interval_days: 7
+
+redundancy:
+  videos:
+    check_interval: "1 hour"
+    strategies:
+      - size: "10GB"
+        min_lifetime: "48 hours"
+        strategy: "most-views"
+
+remote_redundancy:
+  videos:
+    accept_from: "anybody"
+
+csp:
+  enabled: false
+  report_only: true
+  report_uri:
+
+tracker:
+  enabled: true
+  private: true
+  reject_too_many_announces: true
+
+history:
+  videos:
+    max_age: -1
+
+views:
+  videos:
+    remote:
+      max_age: -1
+
+secrets:
+  peertube: 82efa3d858363353a74298ad0eb758f0b25e97d0e6c33d32add7ffec3d7e272a
+
+plugins:
+  index:
+    enabled: true
+    check_latest_versions_interval: "12 hours"
+    url: "https://packages.joinpeertube.org"
+###############################################################################
+#
+# From this point, all the following keys can be overridden by the web interface
+# (local-production.json file). If you need to change some values, prefer to
+# use the web interface because the configuration will be automatically
+# reloaded without any need to restart PeerTube.
+#
+# /!\ If you already have a local-production.json file, the modification of the
+# following keys will have no effect /!\.
+#
+###############################################################################
