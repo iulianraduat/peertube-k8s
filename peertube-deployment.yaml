@@ -1,0 +1,353 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: peertube
+  name: peertube
+spec:
+  type: NodePort
+  ports:
+    - name: "9000"
+      port: 9000
+      targetPort: 9000
+  selector:
+    app: peertube
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-config
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-logs
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-npm
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-postgres-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-redis-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: peertube
+  name: peertube-postfix-opendkim-keys
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: peertube
+  name: peertube
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peertube
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.network/peertube-k8s-default: "true"
+        app: peertube
+    spec:
+      containers:
+        - env:
+            - name: PT_INITIAL_ROOT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_ROOT_PWD
+                  name: peertube-env
+            - name: PEERTUBE_ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_ADMIN_EMAIL
+                  name: peertube-env
+            - name: PEERTUBE_DB_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_DB_HOSTNAME
+                  name: peertube-env
+            - name: PEERTUBE_DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_DB_NAME
+                  name: peertube-env
+            - name: PEERTUBE_DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_DB_PASSWORD
+                  name: peertube-env
+            - name: PEERTUBE_DB_SSL
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_DB_SSL
+                  name: peertube-env
+            - name: PEERTUBE_DB_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_DB_USERNAME
+                  name: peertube-env
+            - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PRIVATE
+                  name: peertube-env
+            - name: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_OBJECT_STORAGE_UPLOAD_ACL_PUBLIC
+                  name: peertube-env
+            - name: PEERTUBE_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SECRET
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_DISABLE_STARTTLS
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_DISABLE_STARTTLS
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_FROM
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_FROM
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_HOSTNAME
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_PORT
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_TLS
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_TLS
+                  name: peertube-env
+            - name: PEERTUBE_TRUST_PROXY
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_TRUST_PROXY
+                  name: peertube-env
+            - name: PEERTUBE_WEBSERVER_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_WEBSERVER_HOSTNAME
+                  name: peertube-env
+            - name: PEERTUBE_WEBSERVER_HTTPS
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_WEBSERVER_HTTPS
+                  name: peertube-env
+            - name: PEERTUBE_WEBSERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_WEBSERVER_PORT
+                  name: peertube-env
+            - name: PEERTUBE_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_REDIS_PORT
+                  name: peertube-env
+          image: chocobozzz/peertube:production-bookworm
+          name: peertube
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - mountPath: /data
+              name: peertube-data
+            - mountPath: /config
+              name: peertube-config
+            - mountPath: /var/log
+              name: peertube-logs
+            - mountPath: /root/.npm
+              name: peertube-npm
+        - env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_USER
+                  name: peertube-env
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: peertube-env
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_DB
+                  name: peertube-env
+          image: postgres:13-alpine
+          name: peertube-postgres
+          ports:
+            - containerPort: 5432
+              hostPort: 5432
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: peertube-postgres-data
+        - image: redis:6-alpine
+          name: peertube-redis
+          ports:
+            - containerPort: 6379
+              hostPort: 6379
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /data
+              name: peertube-redis-data
+        - env:
+            - name: OPENDKIM_DOMAINS
+              valueFrom:
+                configMapKeyRef:
+                  key: OPENDKIM_DOMAINS
+                  name: peertube-env
+            - name: OPENDKIM_RequireSafeKeys
+              valueFrom:
+                configMapKeyRef:
+                  key: OPENDKIM_RequireSafeKeys
+                  name: peertube-env
+            - name: PEERTUBE_ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_ADMIN_EMAIL
+                  name: peertube-env
+            - name: PEERTUBE_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SECRET
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_DISABLE_STARTTLS
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_DISABLE_STARTTLS
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_FROM
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_FROM
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_HOSTNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_HOSTNAME
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_PORT
+                  name: peertube-env
+            - name: PEERTUBE_SMTP_TLS
+              valueFrom:
+                configMapKeyRef:
+                  key: PEERTUBE_SMTP_TLS
+                  name: peertube-env
+            - name: POSTFIX_myhostname
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTFIX_myhostname
+                  name: peertube-env
+          image: mwader/postfix-relay
+          name: peertube-postfix
+          volumeMounts:
+            - mountPath: /etc/opendkim/keys
+              name: peertube-postfix-opendkim-keys
+      restartPolicy: Always
+      volumes:
+        - name: peertube-data
+          persistentVolumeClaim:
+            claimName: peertube-data
+        - name: peertube-config
+          persistentVolumeClaim:
+            claimName: peertube-config
+        - name: peertube-logs
+          persistentVolumeClaim:
+            claimName: peertube-logs
+        - name: peertube-npm
+          persistentVolumeClaim:
+            claimName: peertube-npm
+        - name: peertube-postgres-data
+          persistentVolumeClaim:
+            claimName: peertube-postgres-data
+        - name: peertube-redis-data
+          persistentVolumeClaim:
+            claimName: peertube-redis-data
+        - name: peertube-postfix-opendkim-keys
+          persistentVolumeClaim:
+            claimName: peertube-postfix-opendkim-keys
